@@ -27,7 +27,7 @@ public class MainActivity extends WDActivity {
 
     private TextView mybanner;
     private MZBannerView banner;
-    private ImageView myimg;
+    private MyBannerPresenter myBannerPresenter;
 
     @Override
     protected int getLayoutId() {
@@ -37,7 +37,7 @@ public class MainActivity extends WDActivity {
     @Override
     protected void initView(Bundle savedInstanceState) {
         mybanner = findViewById(R.id.mybanner);
-        final MyBannerPresenter myBannerPresenter = new MyBannerPresenter(new MyBannerCall());
+        myBannerPresenter = new MyBannerPresenter(new MyBannerCall());
 
         mybanner.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +50,7 @@ public class MainActivity extends WDActivity {
 
     @Override
     protected void destoryData() {
-
+        myBannerPresenter.unBind();
     }
 
     private class MyBannerCall implements DataCall<Result<List<MyBanner>>> {
