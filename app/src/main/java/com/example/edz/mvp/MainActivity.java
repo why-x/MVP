@@ -14,18 +14,21 @@ import com.example.edz.mvp.bean.Result;
 import com.example.edz.mvp.presenter.MyBannerPresenter;
 import com.example.edz.mvp.utils.DataCall;
 import com.example.edz.mvp.utils.exception.ApiException;
+import com.example.edz.mvp.utils.util.BaseActivity;
 import com.example.edz.mvp.utils.util.WDActivity;
 import com.zhouwei.mzbanner.MZBannerView;
 import com.zhouwei.mzbanner.holder.MZHolderCreator;
 import com.zhouwei.mzbanner.holder.MZViewHolder;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends WDActivity {
+import okhttp3.MultipartBody;
+
+public class MainActivity extends BaseActivity {
 
 
-    private TextView mybanner;
     private MZBannerView banner;
     private MyBannerPresenter myBannerPresenter;
 
@@ -36,16 +39,8 @@ public class MainActivity extends WDActivity {
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        mybanner = findViewById(R.id.mybanner);
         myBannerPresenter = new MyBannerPresenter(new MyBannerCall());
-
-        mybanner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myBannerPresenter.reqeust();
-            }
-        });
-
+        myBannerPresenter.reqeust();
     }
 
     @Override
@@ -56,24 +51,16 @@ public class MainActivity extends WDActivity {
     private class MyBannerCall implements DataCall<Result<List<MyBanner>>> {
         @Override
         public void success(Result<List<MyBanner>> data) {
-            mybanner.setText(data.getResult().get(0).getTitle());
-
-            for (int i = 0; i < data.getResult().size(); i++) {
-                imgs.add(data.getResult().get(i).getImg_url());
-            }
+            List<MyBanner> result = data.getResult();
             banner = findViewById(R.id.banner);
             // 设置数据
-            banner.setPages(imgs, new MZHolderCreator<BannerViewHolder>() {
+            banner.setPages(result, new MZHolderCreator<BannerViewHolder>() {
                 @Override
                 public BannerViewHolder createViewHolder() {
                     return new BannerViewHolder();
                 }
             });
 
-
-//            imgs.add("http://img1.imgtn.bdimg.com/it/u=4194723123,4160931506&fm=200&gp=0.jpg");
-//            imgs.add("http://img1.imgtn.bdimg.com/it/u=4194723123,4160931506&fm=20&gp=0.jpg");
-//            imgs.add("http://img1.imgtn.bdimg.com/it/u=4194723123,4160931506&fm=30&gp=0.jpg");
         }
 
         @Override
@@ -83,22 +70,45 @@ public class MainActivity extends WDActivity {
     }
 
 
-    List imgs = new ArrayList<>();
-
-    public class BannerViewHolder implements MZViewHolder<String> {
+    public class BannerViewHolder implements MZViewHolder<MyBanner> {
         private ImageView mImageView;
+        private TextView mTextView;
 
         @Override
         public View createView(Context context) {
             // 返回页面布局
             View view = LayoutInflater.from(context).inflate(R.layout.banner_iteam, null);
             mImageView = (ImageView) view.findViewById(R.id.banner_image);
+            mTextView = view.findViewById(R.id.banner_text);
             return view;
         }
 
         @Override
-        public void onBind(Context context, int i, String resultBean) {
-            Glide.with(context).load(resultBean).into(mImageView);
+        public void onBind(Context context, int i, MyBanner resultBean) {
+//            Glide.with(context).load(resultBean.getImg_url()).into(mImageView);
+            if (resultBean.getTitle() != null) {
+                mTextView.setText(resultBean.getTitle());
+            } else {
+                mTextView.setText(resultBean.getInfor_title());
+            }
+            if (resultBean.getImg_url() != null) {
+                Glide.with(context).load(resultBean.getImg_url()).into(mImageView);
+            } else {
+                Glide.with(context).load(resultBean.getMain_img_url()).into(mImageView);
+            }
+
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        banner.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myBannerPresenter.unBind();
     }
 }

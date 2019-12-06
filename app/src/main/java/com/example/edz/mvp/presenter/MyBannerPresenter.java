@@ -7,7 +7,7 @@ import com.example.edz.mvp.utils.NetWorkManager;
 import io.reactivex.Observable;
 
 /**
- * 添加收藏
+ * banner轮播
  */
 public class MyBannerPresenter extends BasePresenter {
     public MyBannerPresenter(DataCall dataCall) {

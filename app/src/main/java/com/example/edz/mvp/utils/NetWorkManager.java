@@ -21,20 +21,18 @@ public class NetWorkManager {
     private static NetWorkManager instance;
     private Retrofit retrofit;
 
-    private NetWorkManager(){
+    private NetWorkManager() {
         init();
     }
 
     public static NetWorkManager getInstance() {
-        if (instance == null){
+        if (instance == null) {
             instance = new NetWorkManager();
         }
         return instance;
     }
 
-    private void init(){
-
-
+    private void init() {
         OkHttpClient okHttpClient = getClient();
 
         retrofit = new Retrofit.Builder()
@@ -45,37 +43,37 @@ public class NetWorkManager {
                 .build();
     }
 
-    public <T> T create(final Class<T> service){
+    public <T> T create(final Class<T> service) {
         return retrofit.create(service);
     }
 
-    public synchronized static OkHttpClient getClient(){
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    public synchronized static OkHttpClient getClient() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.addInterceptor(loggingInterceptor);
-            try {
-                // 自定义一个信任所有证书的TrustManager，添加SSLSocketFactory的时候要用到
-                final X509TrustManager trustAllCert =
-                        new X509TrustManager() {
-                            @Override
-                            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                            }
+        try {
+            // 自定义一个信任所有证书的TrustManager，添加SSLSocketFactory的时候要用到
+            final X509TrustManager trustAllCert =
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
 
-                            @Override
-                            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                            }
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
 
-                            @Override
-                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                                return new java.security.cert.X509Certificate[]{};
-                            }
-                        };
-                final SSLSocketFactory sslSocketFactory = new SSLSocketFactoryCompat(trustAllCert);
-                builder.sslSocketFactory(sslSocketFactory, trustAllCert).hostnameVerifier(getTrustedVerifier());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[]{};
+                        }
+                    };
+            final SSLSocketFactory sslSocketFactory = new SSLSocketFactoryCompat(trustAllCert);
+            builder.sslSocketFactory(sslSocketFactory, trustAllCert).hostnameVerifier(getTrustedVerifier());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return builder.build();
     }
 

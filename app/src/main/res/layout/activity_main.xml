@@ -7,23 +7,15 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/mybanner"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="333333333333" />
-
     <com.zhouwei.mzbanner.MZBannerView
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_below="@+id/lin1"
         android:layout_marginTop="20dp"
         app:canLoop="true"
         app:indicatorAlign="center"
         app:indicatorPaddingLeft="10dp"
         app:middle_page_cover="false"
         app:open_mz_mode="true" />
-
 
 </LinearLayout>
